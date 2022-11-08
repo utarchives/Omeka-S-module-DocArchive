@@ -1,0 +1,53 @@
+<?php
+$translate = $this->plugin('translate');
+$values = '';
+//リスト
+$bodyProperties = $this->themeSetting('body_property');
+
+$valueArray = [];
+$rows = explode("\n", $bodyProperties);
+for ($i = 0; $i < count($rows); $i++) {
+    $row = $rows[$i];
+    $elements = explode(",", $row);
+    if (count($elements) > 1) {
+        $valueArray[] = $this->propertyValue($item, $elements[0], '【' . $translate($elements[1]). '】' );
+    }
+}
+if (count($valueArray) > 0) {
+    foreach ($valueArray as $value) {
+        if (!empty($value)) {
+            $values .= '<span class="period mr-2">' . $value . '</span>';
+        }
+
+    }
+} else {
+    $referenceCode = $this->propertyValue($item, 'dcndl:callNumber', '【参照コード】');
+    if (!empty($referenceCode)) {
+        $referenceCode = '<span class="period mr-2">' . $referenceCode . '</span>';
+    }
+    $propertyList = ['dcterms:creator', 'archiveshub:dateCreatedAccumulatedString', 'dcterms:extent', 'archiveshub:level'];
+    $era = $this->propertyValue($item, 'archiveshub:dateCreatedAccumulatedString', '【年代域】');
+    $conditon = $this->propertyValue($item, 'archiveshub:accessRestrictions', '【利用条件】');
+    $location = $this->propertyValue($item, 'archiveshub:location', '【収蔵情報】');
+    if (!empty($era)) {
+        $era = '<span class="period mr-2">' . $era . '</span>';
+    }
+    if (!empty($conditon)) {
+        $conditon = '<span class="period mr-2">' . $conditon . '</span>';
+    }
+    if (!empty($location)) {
+        $location = '<span class="period mr-2">' . $location . '</span>';
+    }
+    $values = $referenceCode . $era . $conditon . $location;
+}
+?>
+<tr>
+    <td class="item-list">
+         <div class="item-info no-parent<?php echo $this->getBgColor($item); ?>">
+            <div class="list-media"><?php echo $item->linkRaw($this->thumbnail($item, 'medium')); ?></div>
+            <div class="list-title mb-1"><?php $this->listItemTitle($item); ?></div>
+            <div class="list-sub-items ml-3"><?php echo $values; ?></div>
+            <div class="list-tree ml-4"><?php $this->treeList($item->id()); ?></div>
+        </div>
+    </td>
+</tr>

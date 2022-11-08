@@ -1,0 +1,78 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+$searchValue = $this->escapeHtml($this->params()->fromQuery('search', ''));
+$titleValue = $this->escapeHtml($this->params()->fromQuery(urlencode('dcterms:title'), ''));
+$dateValue = $this->escapeHtml($this->params()->fromQuery(urlencode('dcterms:date'), ''));
+$creatorValue = $this->escapeHtml($this->params()->fromQuery(urlencode('dcterms:creator'), ''));
+$query = $this->params()->fromQuery();
+$headingTerm = $this->siteSetting('browse_heading_property_term', 'dcterms:title');
+$this->headScript()->appendFile($this->assetUrl('js/search-form.js', 'DocArchive'));
+$bodyTerm = $this->siteSetting('browse_body_property_term', 'dcterms:description');
+$itemMedia = $item->media();
+$searchUrl = $this->url('site/searchchildren-id', ['id' => $item->id()], true);
+$identifier = $this->getDocArchiveIdentifier();
+$cleanUrl = $identifier->getCleanUrl();
+if ($cleanUrl) {
+    $itemIdentifier = $identifier->getIdentifier($item);
+    $searchUrl = $this->url('site/searchchildren-identifier', ['identifier' => $itemIdentifier], true);
+}
+?>
+<?php echo $this->partial('common/bread-crumb.phtml', ['targetPage' => '資料詳細',]); ?>
+<p class="text-right">
+    <small><a href="javascript:history.back()" class="backlink">&raquo; 前の画面へ戻る</a></small>
+</p>
+<div class="row">
+       <div class="col">
+        <?php echo $this->partial('common/selected-resource-tree.phtml', ['item' => $item, 'site' =>$site]); ?>
+    </div>
+    <div class="col col-md-8">
+        <div id="item-detail">
+            <div class="row" id="item-detail-header">
+                <div class="col">資料群内の一覧</div>
+            </div>
+            <div class="row">
+                <div class="col detail-button-area">
+                    <p class="text-right">
+                        <button id="show-directory-search-button" class="btn btn-primary" data-url="<?php echo $this->escapeHtml($searchUrl); ?>"><i class="fa fa-search" aria-hidden="true"></i> 資料群内の検索</button>
+                        <button id="show-detail-button" class="btn btn-primary" data-url="<?php echo $item->siteUrl() ?>"><span class="glyphicon glyphicon-th-list"></span> 詳細を表示</button>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <table class="table">
+                        <tr>
+                            <th width='20%'><label>タイトル</label></th>
+                            <td><?php $this->itemTitleWithRuby($item); ?></td>
+                        </tr>
+                        <?php echo $this->partial('common/child_list_detail.phtml', ['values' => $item->values()]); ?>
+                        <tr>
+                            <th><label>階層</label></th>
+                            <td><?php $this->treeList($item->id()) ?></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="search-result">
+            <div class="row" id="result-header">
+                <div class="col">選択している階層&nbsp;&nbsp;&nbsp;&nbsp; <?php $this->treeListNoLink($item->id(), $item->displayTitle()) ?></div>
+            </div>
+            <?php echo $this->partial('common/sort-form.phtml', ['itemCount' => $itemCount, 'page' => $page, 'controller' => $controller, 'action' => $action, 'sortBy' => $sortBy, 'searchFolder' => $searchFolder]); ?>
+            <?php echo $this->pagination(); ?>
+            <table class="table table-striped">
+                <tbody>
+            <?php
+            foreach ($items as $item):
+                $heading = $item->value($headingTerm, ['default' => $this->translate('[Untitled]')]);
+                $body = $item->value($bodyTerm);
+            ?>
+                <?php echo $this->partial('common/item-list.phtml', ['item' => $item, 'parent' => false]); ?>
+            <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php echo $this->pagination(); ?>
+        </div>
+    </div>
+</div>
+<?php $this->trigger('view.show.after'); ?>

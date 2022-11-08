@@ -1,0 +1,87 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+$query = $this->params()->fromQuery();
+$this->headScript()->appendFile($this->assetUrl('js/search-form.js', 'DocArchive'));
+?>
+<?php echo $this->partial('common/bread-crumb.phtml', ['targetPage' => 'キーワード検索',]); ?>
+<div class="row">
+       <div class="col">
+        <?php echo $this->partial('common/resource-tree.phtml', ['site' =>$site]); ?>
+    </div>
+    <div class="col col-md-8">
+        <?php echo $this->partial('common/doc-search-form.phtml', ['group' => $group, 'target' => $this->escapeHtml($this->url('site/docarchive', [], true)),'item' => null, 'targetAll' => false]); ?>
+        <?php if ($searching || $defaultSearch): ?>
+        <div id="search-result">
+            <div class="row" id="result-header">
+                <div class="col">検索結果</div>
+            </div>
+            <?php if (count($items) > 0):?>
+                <?php echo $this->partial('common/sort-form.phtml', ['itemCount' => $itemCount, 'page' => $page, 'controller' => $controller, 'action' => $action, 'sortBy' => $sortBy, 'searchFolder' => $searchFolder]); ?>
+                <?php echo $this->pagination(); ?>
+                <table class="table table-striped">
+                    <tbody>
+                <?php
+                $parentItemId = 0;
+                $count = 0;
+                $sortValue = '$$$$$$$$$$$$$$$$$$$$$$@@@@@@@@@@@@@@@@@@@@@@@@@@$$$$$$$';
+                $preItemType = 0;
+                foreach ($items as $item):
+                    $count++;
+                    $break = false;
+                    if(!$group) {
+                        if (strcmp($sortBy, 'parent') == 0) {
+                            if ($parentItemId != $item->parentItem()->id()) {
+                                $parentItemId = $item->parentItem()->id();
+                                $break = true;
+                            }
+                        } else {
+                            $currentValue = '';
+                            if (isset($item->values()[$sortBy]['values'])) {
+                                foreach($item->values()[$sortBy]['values'] as $value) {
+                                    $currentValue .= $value->value();
+                                }
+                                if (strcmp($sortValue, $currentValue) != 0) {
+                                    $sortValue = $currentValue;
+                                    $break = true;
+                                }
+                            } else {
+                                if (strcmp($sortValue, $currentValue) != 0) {
+                                    $sortValue = $currentValue;
+                                    $break = true;
+                                }
+                            }
+                        }
+                    }
+
+                ?>
+                    <?php if(!$group):?>
+                        <?php if (strcmp($sortBy, 'parent') == 0): ?>
+                        	<?php if ($this->getFolderClass($item) == 1) {
+                        	   $parentItemId = 0;
+                        	} else {
+                        	    $break = $break;
+                        	}?>
+                            <?php echo $this->partial('common/parent-item-list.phtml', ['item' => $item, 'parentItem' => $item->parentItem(), 'newParent' => $break, 'currentCount' => $count, 'itemCount' => count($items), 'preItemType' => $preItemType]); ?>
+                            <?php if ($this->getFolderClass($item) == 1) {
+                               $preItemType = 0;
+                            } else {
+                                $preItemType = 1;
+                            }?>
+                        <?php else: ?>
+                            <?php echo $this->partial('common/child-item-list.phtml', ['item' => $item, 'break' => $break, 'sortValue' => $sortValue]); ?>
+                        <?php endif;?>
+                    <?php else:?>
+                        <?php echo $this->partial('common/item-list.phtml', ['item' => $item, 'parent' => true]); ?>
+                    <?php endif;?>
+                <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php echo $this->pagination(); ?>
+            <?php else: ?>
+                <div id="no-record-result">該当する資料は見つかりませんでした。</div>
+            <?php endif; ?>
+        <?php endif; ?>
+        </div>
+    </div>
+</div>
+<?php $this->trigger('view.browse.after'); ?>

@@ -1,0 +1,34 @@
+<?php
+$targetProperty = 'dcndl:callNumber';
+$referenceCode = '';
+if (isset($item->values()[$targetProperty])) {
+    $referenceCode .= '【参照コード】';
+    foreach ($item->values()[$targetProperty]['values'] as $value) {
+        $referenceCode .= $value->value();
+    }
+}
+$targetProperty = 'archiveshub:dateCreatedAccumulatedString';
+$period = '';
+if (isset($item->values()[$targetProperty])) {
+    $period .= '&nbsp;&nbsp;【年代域】';
+    foreach ($item->values()[$targetProperty]['values'] as $value) {
+        $period .= $value->value();
+    }
+}
+$documentClass = '';
+if ($item->id() != $childItem->id()) {
+    $documentClass = ' list-document-item';
+}
+?>
+<tr>
+    <td class="item-list-title<?php echo $documentClass; ?>">
+    <?php if ($item->id() == $childItem->id()):?>
+    <div class="list-media"><?php echo $item->linkRaw($this->thumbnail($item, 'medium')); ?></div>
+    <a class="parent-item-link" href="<?php echo $item->siteUrl() ?>">
+        <?php echo $item->displayTitle() ?></a><?php echo $referenceCode ?><span class="period"><?php echo $period ?></span>
+    <div class="list-tree">&nbsp;&nbsp;&nbsp;<?php $this->treeList($item->id()); ?></div>
+    <?php else: ?>
+    <a class="parent-item-link" href="<?php echo $item->siteUrl() ?>"><?php echo $item->displayTitle() ?></a><?php echo $referenceCode ?>
+    <?php endif;?>
+    </td>
+</tr>

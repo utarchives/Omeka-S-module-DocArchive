@@ -1,0 +1,80 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+$searchValue = $this->escapeHtml($this->params()->fromQuery('search', ''));
+$titleValue = $this->escapeHtml($this->params()->fromQuery(urlencode('dcterms:title'), ''));
+$dateValue = $this->escapeHtml($this->params()->fromQuery(urlencode('archiveshub:dateCreatedAccumulatedString'), ''));
+$creatorValue = $this->escapeHtml($this->params()->fromQuery(urlencode('dcterms:creator'), ''));
+$referenceCodeValue = $this->escapeHtml($this->params()->fromQuery(urlencode('dcndl:callNumber'), ''));
+$searchTarget = $this->escapeHtml($this->params()->fromQuery('target', ''));
+
+if (!$searchTarget) {
+    $searchTarget = 'all';
+}
+$query = $this->params()->fromQuery();
+$advancedLabel = '詳細条件を表示';
+if (count($query) > 0) {
+    $advancedLabel = '詳細条件を隠す';
+}
+?>
+<div class="panel panel-default well" id="search-panel">
+    <form action="<?php echo $target; ?>" id="search-form" onsubmit="startSearch()">
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label search-field-title" for="searchInput">キーワード</label>
+            <div class="col-sm-10 search-column">
+                <input type="text" id="searchInput" name="search" class="form-control" value="<?php echo $searchValue; ?>">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label search-field-title" for="titleInput">タイトル</label>
+            <div class="col-sm-4 search-column">
+                <input type="text" class="form-control" name="<?php echo urlencode('dcterms:title')?>" value="<?php echo $titleValue; ?>" id="titleInput">
+            </div>
+            <label class="col-sm-2 col-form-label search-field-title" for="eraInput">年代域</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="<?php echo urlencode('archiveshub:dateCreatedAccumulatedString')?>" value="<?php echo $dateValue; ?>" id="eraInput">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label search-field-title" for="creatorInput">作成者</label>
+            <div class="col-sm-4 search-column">
+                <input type="text" class="form-control" name="<?php echo urlencode('dcterms:creator')?>" value="<?php echo $creatorValue; ?>" id="creatorInput">
+            </div>
+            <label class="col-sm-2 col-form-label search-field-title" for="referenceCodeInput">参照コード</label>
+            <div class="col-sm-4 search-column">
+                <input type="text" class="form-control" name="<?php echo urlencode('dcndl:callNumber')?>" value="<?php echo $referenceCodeValue; ?>" id="referenceCodeInput">
+            </div>
+        </div>
+        <div class="form-group row" id="search-target">
+            <?php if (!$targetAll): ?>
+            <label class="col-sm-2 col-form-label">&nbsp;</label>
+            <div class="col-sm-4" >
+                <div class="row">
+                    <label class="col-form-label search-field-title col-sm-12" style="text-align: left">
+                        <input type="radio" name="target" value="all" id="targetAllItem" <?php if (strcmp($searchTarget, 'all') == 0): echo 'checked'; endif;?>>
+                        <span class="pl-2 pt-1">すべて表示</span></label>
+                </div>
+                <div class="row">
+                    <label class="col-form-label search-field-title col-sm-12" style="text-align: left">
+                    <input type="radio" name="target" value="group" id="targetGroup" <?php if (strcmp($searchTarget, 'group') == 0): echo 'checked'; endif;?>><span class="pl-2 pt-1">資料群のみ表示<span></label>
+                </div>
+            </div>
+            <?php endif; ?>
+            <div class="col-sm-6">
+                <div class="row">
+                    <label class="col-form-label search-field-title col-sm-12"style="text-align: left"><input type="checkbox" name="media" value="1" id="mediaCheck" <?php if (isset($query['media'])):?> checked<?php endif;?>>
+                    <span class="pl-1 pt-2">画像がある資料のみ検索</span></label>
+                </div>
+            </div>
+            <!-- <div class="col-sm-2">
+                <div class="form-check form-check-inline"> -->
+                     <!--<label class="form-check-label" for="mediaCheck">有</label>-->
+                <!-- </div>
+            </div> -->
+        </div>
+        <div class="form-group row btn-bg">
+            <div class="offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary" id="docsearch-button"><i class="fa fa-search" aria-hidden="true"></i> 検索</button>
+            </div>
+        </div>
+    </form>
+</div>

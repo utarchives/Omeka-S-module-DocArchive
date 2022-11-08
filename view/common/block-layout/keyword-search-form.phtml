@@ -1,0 +1,26 @@
+<?php
+$action = $this->url('site/docarchive', [], true);
+if (strpos($this->url('site/docarchive', [], true), '//')) {
+    $action = $this->url('site', [], true);
+    $action .= $defaultSiteSlug . '/docarchive';
+}
+?>
+<style>
+  #searchInput {
+    border: solid 1px #000;
+    border-radius: 0.34em;
+  }
+  #searchInput:focus {
+    outline: solid 0px #000;
+    border-radius: 0.34em;
+  }
+</style>
+<form action="<?php echo $action ?>" id="search-form" onsubmit="startSearch()">
+<div class="form-group row">
+    <div class="col-sm-12 search-column <?php echo $align ?>">
+        <div class="btn-group">
+            <input type="text" id="searchInput" name="search" class="px-1 keyword-search-box" placeholder="キーワードを入力">
+            <span class="searchclear keyword-search-button" onclick="startSearch(); document.getElementById('search-form').submit();"><i class="fa fa-search" aria-hidden="true"></i>検索</span>
+        </div>
+    </div>
+</div>

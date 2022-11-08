@@ -1,0 +1,109 @@
+<?php
+$displayRecordValue = $this->escapeHtml($this->params()->fromQuery('display_record', ''));
+if (!$displayRecordValue) {
+    $displayRecordValue = '50';
+}
+$sortOrderValue = $this->escapeHtml($this->params()->fromQuery('sort_order', ''));
+if (!$sortOrderValue) {
+    $sortOrderValue = 'asc';
+}
+// $sortByValue = $this->escapeHtml($this->params()->fromQuery('sort_by', ''));
+
+$displayRecordArray = [
+    '10' => '10件',
+    '25' => '25件',
+    '50' => '50件',
+    '100' => '100件',
+    '200' => '200件',
+];
+$sortOrderArray = [
+    'asc' => '昇順',
+    'desc' => '降順',
+];
+// if (strpos($controller, 'DocArchive') === false || strpos($action, 'show') === false) {
+//     $sortByArray[urlencode('parent')] = '資料群';
+//     if (!$sortByValue) {
+//         $sortByValue = 'parent';
+//     }
+// } else {
+//     if (!$sortByValue) {
+//         $sortByValue = 'dcterms:date';
+//     }
+//     $sortByArray = [];
+// }
+if ($searchFolder) {
+    $sortByArray[urlencode('parent')] = '資料群';
+} else {
+    $sortByArray = [];
+}
+
+$sortByArray += [
+    urlencode('dcterms:title') => 'タイトル',
+    urlencode('dcterms:creator') => '作成者',
+    //     urlencode('') => '内容摘記',
+    urlencode('dcndl:callNumber') => '参照コード',
+    urlencode('dcterms:date') => '年代域',
+    urlencode('archiveshub:level') => '記述レベル',
+    urlencode('dcterms:extent') => '資料の規模',
+];
+$translate = $this->plugin('translate');
+// ソート順設定
+$sortProperties = $this->themeSetting('sort_property');
+if ($sortProperties != "") {
+    $sortHeadings = [];
+    $rows = explode("\n", $sortProperties);
+    for ($i = 0; $i < count($rows); $i++) {
+        $row = $rows[$i];
+        $elements = explode(",", $row);
+        if (count($elements) > 1) {
+            $sortHeadings[urlencode($elements[0])] = $translate(trim($elements[1]));
+            // array_push($sortHeadings, [
+            //     $elements[0] => $translate(trim($elements[1]))
+            //     // 'label' => $translate(trim($elements[1])),
+            //     // 'value' => $elements[0]
+            // ]);
+        }
+    }
+    $sortByArray = $sortHeadings;
+}
+
+$perPage = (int)$displayRecordValue;
+$pageNow = (int)$page;
+$currentStart = ($pageNow - 1) * $perPage + 1;
+$currentEnd = $pageNow * $perPage > $itemCount ? $itemCount : $pageNow * $perPage;
+$currentRecords = $currentStart . ' - ' . $currentEnd . '件';
+?>
+<div id="sort-form">
+    <div class="row">
+        <div class="col" id="result-count">該当件数:<?php echo $itemCount ?>&nbsp;( <?php echo $currentRecords;?> )</div>
+    </div>
+        <div class="form-group row">
+        <label for="display-record" class="col-sm-2 col-form-label" id="result-count">表示件数</label>
+        <div class="col-sm-2">
+            <select id="display-record" class="form-control" name="display_record" style="width: 80px">
+                <?php foreach ($displayRecordArray as $key => $value): ?>
+                <option value="<?php echo $key; ?>"<?php if ($key == $displayRecordValue):?>selected<?php endif;?>><?php echo $value ?></option>
+                <?php endforeach; ?>
+            </select>
+            <input type="hidden" id="old-per-page" name="old_per_page" value="<?php echo $displayRecordValue; ?>">
+        </div>
+        <label for="sort-order" class="col-sm-1 col-form-label">表示順</label>
+        <div class="col-sm-2">
+            <select class="form-control" id="sort-order" name="sort_order">
+                <?php foreach ($sortOrderArray as $key => $value): ?>
+                <option value="<?php echo $key; ?>"<?php if ($key == $sortOrderValue):?>selected<?php endif;?>><?php echo $value ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-sm-3">
+            <select class="form-control" id="sort-by" name="sort_by">
+                <?php foreach ($sortByArray as $key => $value): ?>
+                <option value="<?php echo $key; ?>"<?php if (urldecode($key) == $sortBy):?>selected<?php endif;?>><?php echo $value ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-sm-2 btn-end">
+             <button class="btn btn-primary" id="sort-button" onclick="startSearch()"><i class="fa fa-sort-amount-asc" aria-hidden="true"></i> 再表示</button>
+        </div>
+    </div>
+</div>

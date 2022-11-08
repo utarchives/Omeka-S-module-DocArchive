@@ -1,0 +1,54 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+$query = $this->params()->fromQuery();
+$this->headScript()->appendFile($this->assetUrl('js/search-form.js', 'DocArchive'));
+$searchUrl = $this->url('site/docarchive-id', ['id' => $item->id(), 'action' => 'search-children'], true);
+$identifier = $this->getDocArchiveIdentifier();
+$cleanUrl = $identifier->getCleanUrl();
+if ($cleanUrl) {
+    $itemIdentifier = $identifier->getIdentifier($item);
+    $searchUrl = $this->url('site/docarchive-identifier', ['identifier' => $itemIdentifier, 'action' => 'search-children'], true);
+}
+?>
+<?php echo $this->partial('common/bread-crumb.phtml', ['targetPage' => 'キーワード検索',]); ?>
+<?php if (strpos($_SERVER['REQUEST_URI'], 'search-children?search=') == false): ?>
+<p class="text-right">
+    <small><a href="javascript:history.back()" class="backlink">&raquo; 前の画面へ戻る</a></small>
+</p>
+<?php endif; ?>
+<div class="row">
+       <div class="col">
+        <?php echo $this->partial('common/selected-resource-tree.phtml', ['item' => $item, 'site' =>$site]); ?>
+    </div>
+    <div class="col col-md-8">
+        <?php echo $this->partial('common/doc-search-form.phtml', ['group' => $group, 'target' => $this->escapeHtml($searchUrl),'item' => $item, 'targetAll' => true]); ?>
+
+        <div id="search-result">
+            <div class="row" id="result-header">
+                <div class="col">選択している階層&nbsp;&nbsp;&nbsp;&nbsp; <?php $this->treeListNoLink($item->id(), $item->displayTitle()) ?></div>
+            </div>
+            <?php if ($searching): ?>
+            <?php if (count($items) > 0):?>
+                <?php echo $this->partial('common/sort-form.phtml', ['itemCount' => $itemCount, 'page' => $page, 'controller' => $controller, 'action' => $action, 'sortBy' => $sortBy, 'searchFolder' => $searchFolder]); ?>
+                <?php echo $this->pagination(); ?>
+                <table class="table table-striped">
+                    <tbody>
+                <?php
+                $parentItemId = 0;
+                $sortValue = '$$$$$$$$$$$$$$$$$$$$$$@@@@@@@@@@@@@@@@@@@@@@@@@@$$$$$$$';
+                foreach ($items as $item):
+                ?>
+                        <?php echo $this->partial('common/item-list.phtml', ['item' => $item]); ?>
+                <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php echo $this->pagination(); ?>
+            <?php else: ?>
+                <div id="no-record-result">該当する資料は見つかりませんでした。</div>
+            <?php endif; ?>
+            <?php endif; ?>
+        </div>
+
+    </div>
+</div>
+<?php $this->trigger('view.browse.after'); ?>

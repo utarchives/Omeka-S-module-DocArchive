@@ -1,0 +1,25 @@
+<?php
+$referenceCode = $this->propertyValue($item, 'dcndl:callNumber', '【参照コード】');
+if (!empty($referenceCode)) {
+    $referenceCode = '&nbsp;&nbsp;' . $referenceCode;
+}
+$era = $this->propertyValue($item, 'archiveshub:dateCreatedAccumulatedString', '【年代域】');
+if (!empty($era)) {
+    $era = '<span class="period">&nbsp;&nbsp;' . $era . '</span>';
+}
+$propertyList = ['dcterms:creator', 'archiveshub:dateCreatedAccumulatedString', 'dcterms:extent', 'archiveshub:level'];
+?>
+<?php if ($newParent): ?>
+<?php echo $this->partial('common/parent-item-header.phtml', ['item' => $parentItem, 'childItem' => $item, 'preItemType' => $preItemType]); ?>
+<?php endif; ?>
+<tr>
+    <td class="item-list">
+        <?php if ($item->id() != $parentItem->id()):?>
+        <div class="item-info<?php echo $this->getBgColor($item); ?>">
+            <div class="list-media"><?php echo $item->linkRaw($this->thumbnail($item, 'medium')); ?></div>
+            <div class="list-title"><?php $this->listItemTitle($item); ?><?php echo $referenceCode; ?><?php  echo $era; ?></div>
+            <div class="list-tree"><?php $this->treeList($item->id()); ?></div>
+        </div>
+        <?php endif;?>
+    </td>
+</tr>
