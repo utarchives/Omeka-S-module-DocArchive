@@ -1,4 +1,4 @@
-# DocArchiv
+# DocArchive
 
 A module for using Resource Tree And Special Character Search
 
