@@ -1,8 +1,6 @@
-# MetadataBrowse
+# DocArchive
 
-This module will make it possible for users to view a browse page of all Resources that share a value for a particular metadata field.
-
-See the [Omeka S user manual](http://dev.omeka.org/docs/s/user-manual/modules/metadatabrowse/) for user documentation.
+階層構造表示、旧字異体字検索用画面対応モジュール
 
 ## Installation
 
