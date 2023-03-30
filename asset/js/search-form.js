@@ -88,4 +88,15 @@ $(document).ready( function() {
         }
         return false;
     });
+    $("#search-form-reset").on('click', () => {
+        $('#searchInput').val('');
+        $('#titleInput').val('');
+        $('#eraInput').val('');
+        $('#creatorInput').val('');
+        $('#referenceCodeInput').val('');
+        $('#mediaCheck').removeAttr("checked").prop("checked", false).change();
+        $('#targetAllItem').prop("checked", true).change();
+        $('#targetGroup').removeAttr("checked").prop("checked", false).change();
+        return false;
+    });
 });

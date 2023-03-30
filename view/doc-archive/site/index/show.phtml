@@ -33,7 +33,7 @@ if ($cleanUrl) {
             <div class="row">
                 <div class="col detail-button-area">
                     <p class="text-right">
-                        <button id="show-directory-search-button" class="btn btn-primary" data-url="<?php echo $this->escapeHtml($searchUrl); ?>"><i class="fa fa-search" aria-hidden="true"></i> 資料群内の検索</button>
+                        <button id="show-directory-search-button" class="btn btn-primary" data-url="<?php echo $this->escapeHtml($searchUrl); ?>" onclick="startSearch()"><i class="fa fa-search" aria-hidden="true"></i> 資料群内の検索</button>
                         <button id="show-detail-button" class="btn btn-primary" data-url="<?php echo $item->siteUrl() ?>"><span class="glyphicon glyphicon-th-list"></span> 詳細を表示</button>
                     </p>
                 </div>

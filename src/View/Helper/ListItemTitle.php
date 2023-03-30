@@ -22,7 +22,7 @@ class ListItemTitle extends AbstractHelper
         $targetProperty = 'dcndl:callNumber';
         $outputHtml =  '<a href="%s" class="child-item-link">';
         if ($resource->resourceClass()->id() == $this->relatedItemsData->getDocumentResourceClassId()) {
-            $outputHtml =  '<a href="%s" class="child-item-link" target="_blank">';
+            $outputHtml =  '<a href="%s?target=new" class="child-item-link" target="_blank">';
         }
         if ($resource->resourceClass()->id() == $this->relatedItemsData->getDocumentResourceClassId()) {
             $outputHtml .= '<i class="fa fa-file" aria-hidden="true" style="color:#3c76b5" ></i>';
